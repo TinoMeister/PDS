@@ -18,14 +18,14 @@ Introdução ao problema
 -------------------------//---------------------
 
 Contexto:
-    - Alunos da Universidade do Minho estão a realizar um robo domestico como seu projeto de mestrado ou doutoramento, e ele vai poder varias tarefas como por exemplo:
+    - Alunos da Universidade do Minho estão a realizar um robo doméstico como seu projeto de mestrado ou doutoramento, e ele vai poder realizar varias tarefas como por exemplo:
         - Segurar as compras
         - Buscar coisas
         - Seguir nos
         - Dizermos horas, meterologia, noticias, etc....
 
     - Para alem disso vai precisar de alguma parte em o utilizador possa interagir, para alem de ouvir e fazer o que dizemos, ele vai ter um tablet para que possa mandar 
-        comandos para o robo e tambem vai ter um website juntamente com uma aplicacao para poder controlar e saber o que esta a fazer.
+        comandos para o robo e tambem vai ter um website juntamente com uma aplicação para poder controlar e saber o que esta a fazer.
 
 
 Descriçao do problema e suas consequencias:
@@ -34,7 +34,7 @@ Descriçao do problema e suas consequencias:
 
 Motivacao para a resolucao do problema:
     - Deixar o mundo mais tecnologico
-    - Deixar o mundo mais perguicoso(melhor remover)
+    - Deixar o mundo mais "perguicoso"(melhor remover)
     
 
 
