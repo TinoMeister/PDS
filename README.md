@@ -2,7 +2,7 @@
 
 Trabalho para a disciplina de Projeto de Desenvolvimento de Software (PDS)
 
-## Sintase
+## Sintaxe
 
 Este trabalho consiste em controlar um robo e ter a informacao sobre juntamente podendo adicionar comandos extras.
 
@@ -17,10 +17,10 @@ Aqui é onde o utilizador possa fazer a gestão dos utilizadores, robos e comand
 
 ### API
 
-A API serve para ajudar a nossa aplicação a comunicar com a base de dados.
+A API serve para ajudar a nossa aplicação a comunicar com a base de dados fazendo parte do "backend".
 
 ### Robot
 
-O Robot esta a ser realizado por alunos na Universidade do minho, e por esse motivo nao podera ser apresentado.
+O Robot esta a ser realizado por alunos na Universidade do minho, e por esse motivo não poderá ser apresentado.
 
-Este trabalho foi feito pelo *Equipa* **Robot Inc.**.
+Este trabalho foi feito pela *Equipa* **Robot Inc.**.
