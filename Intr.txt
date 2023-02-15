@@ -1,0 +1,76 @@
+Introdução ao problema
+    - Contexto (Revisao)
+    - Descrição do problema e suas consequências (Revisao)
+    - Motivação para a resolução do problema (Revisao)
+
+- Backlog completo com backlog items e tasks
+
+- Especificação do sistema.
+    - É obrigatória a definição dos seguintes diagramas : Use Cases, EntityRelationship, Class Diagrams, Sequence Diagrams
+    - É recomendável a definição dos seguintes diagramas: Activity Diagrams, Object Diagrams, Component Diagrams
+
+- Mockups de todo o sistema de software
+
+- Especificação dos requisitos não funcionais do sistema (Revisao)
+
+- Planeamento de sprints até à versão Alpha na data de entrega da análise de requisitos e modelação
+
+-------------------------//---------------------
+
+Contexto:
+    - Alunos da Universidade do Minho estão a realizar um robo domestico como seu projeto de mestrado ou doutoramento, e ele vai poder varias tarefas como por exemplo:
+        - Segurar as compras
+        - Buscar coisas
+        - Seguir nos
+        - Dizernos horas, meterologia, noticias, etc....
+
+    - Para alem disso vai precisar de alguma parte em o utilizador possa interagir, para alem de ouvir e fazer o que dizemos, ele vai ter um tablet para que possa mandar 
+        comandos para o robo e tambem vai ter um website juntamente com uma aplicacao para poder controlar e saber o que esta a fazer.
+
+
+Descriçao do problema e suas consequencias:
+    - Lares, idosos sem cuidado supervisor e enfermeiros com pouca ajuda
+    - Casa ajudar, cuidados extras
+
+Motivacao para a resolucao do problema:
+    - Deixar o mundo mais tecnologico
+    - Deixar o mundo mais perguicoso
+
+
+Especificação dos requisitos não funcionais do sistema:
+    - Seguranca elevada (Pode ter ataques ciberneticos)
+    - Tem que ser intuitivo e facil de utilizacao
+    - O website tem que ser suportado para versoes mais atualizadas dos chorme
+    - A aplicacao tem que funcionar para os android > 5.1 (lollipop)
+
+
+Planeamento de sprints até à versão Alpha na data de entrega
+da análise de requisitos e modelação:
+    - 2 semanas cada
+    -
+    -
+
+
+---------------------------//-----------------
+
+Projeto:
+    API:
+        - Verificar sempre as credenciais do user
+        - CRUD USERS
+        - CRUD ROBOTS
+        - CRUD comandos
+        - 
+
+    Web:
+        - Criar conta
+        - Adicionar Robos por id
+        - Ver robos (estado, bateria, localizacao, ....)
+        - Adicionar comandos;
+
+
+    Robot:
+        - Buscar dados na API:
+            - User, comandos. etc
+        - Mandar dados ID
+        - 
+        -
