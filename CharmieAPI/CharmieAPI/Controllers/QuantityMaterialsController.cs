@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics;
 using NuGet.Protocol;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CharmieAPI.Controllers
 {
@@ -25,6 +26,7 @@ namespace CharmieAPI.Controllers
         /// <param name="environmentId">Environment's Id</param>
         /// <returns>List of QuantityMaterial</returns>
         [HttpGet("Environment/{environmentId}")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<QuantityMaterial>>> GetQuantityMaterialsByEnvironment(int environmentId)
         {
             // Verify in the database if there are any materials
@@ -48,6 +50,7 @@ namespace CharmieAPI.Controllers
         /// <param name="taskId">Task's Id</param>
         /// <returns>List of QuantityMaterial</returns>
         [HttpGet("Task/{taskId}")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<QuantityMaterial>>> GetQuantityMaterialsByTask(int taskId)
         {
             // Verify in the database if there are any materials
@@ -75,10 +78,13 @@ namespace CharmieAPI.Controllers
             // Verify if the quantityMaterial receibed is null
             if (quantityMaterials.IsNullOrEmpty()) return BadRequest();
 
+            // Goes element by element
             foreach (QuantityMaterial quantityMaterial in quantityMaterials)
             {
+                // Verify if material name exists
                 Material? tempMat = await _context.Materials.FirstOrDefaultAsync(m => m.Name.Equals(quantityMaterial.Material.Name));
 
+                // If not then save it
                 if (tempMat is null)
                 {
                     _context.Materials.Add(quantityMaterial.Material);
@@ -96,6 +102,7 @@ namespace CharmieAPI.Controllers
                         return BadRequest(ModelState);
                     }
                 }
+                // else get the id
                 else quantityMaterial.Material.Id = tempMat.Id;
 
                 // update material id
@@ -217,6 +224,7 @@ namespace CharmieAPI.Controllers
         {
             List<QuantityMaterial> quantsRemove = new List<QuantityMaterial>();
 
+            // Goes element by element and add to the list quantsRemove all the elements that doesnt have the same id in Environment
             foreach (QuantityMaterial quant in await _context.QuantityMaterials.Where(q => q.EnvironmentId.Equals(envId)).ToListAsync())
             {
                 if (quants.Any(q => q.Id.Equals(quant.Id))) continue;
@@ -224,6 +232,7 @@ namespace CharmieAPI.Controllers
                 quantsRemove.Add(quant);
             }
 
+            // Goes element by element and add to the list quantsRemove all the elements that doesnt have the same id in Task
             foreach (QuantityMaterial quant in await _context.QuantityMaterials.Where(q => q.TaskId.Equals(taskId)).ToListAsync())
             {
                 if (quants.Any(q => q.Id.Equals(quant.Id))) continue;
@@ -231,10 +240,10 @@ namespace CharmieAPI.Controllers
                 quantsRemove.Add(quant);
             }
 
-            if (quantsRemove.IsNullOrEmpty()) return Ok();
-
+            // Put the list to be removed
             _context.RemoveRange(quantsRemove);
 
+            // Save to the database
             try
             {
                 await _context.SaveChangesAsync();
@@ -248,7 +257,7 @@ namespace CharmieAPI.Controllers
             return Ok();
         }
 
-        /* A DAR 70% vale a pena?? */
+        /* A DAR 100% vale a pena?? */
         /// <summary>
         /// This method removes an QuantityMaterial from the database
         /// </summary>

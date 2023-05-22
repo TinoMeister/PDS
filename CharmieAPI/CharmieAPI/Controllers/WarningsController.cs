@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CharmieAPI.Models;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CharmieAPI.Controllers
 {
@@ -21,6 +22,7 @@ namespace CharmieAPI.Controllers
         /// </summary>
         /// <returns>Warning List</returns>
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Warning>>> GetWarnings()
         {
             if (_context.Warnings.IsNullOrEmpty()) return NotFound();
@@ -35,6 +37,7 @@ namespace CharmieAPI.Controllers
         /// <param name="robotId">Robot's Id</param>
         /// <returns>Warning List</returns>
         [HttpGet("{robotId}")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Warning>>> GetAllWarnings(int robotId)
         {
             if (_context.Warnings.IsNullOrEmpty()) return NotFound();
@@ -54,6 +57,7 @@ namespace CharmieAPI.Controllers
             // Verify if the warning receibed is null
             if (warning is null || warning.IdentityId is not null) return BadRequest();
 
+            // Set state of warning to CREATED
             warning.State = WarningStates.CREATED;
 
             // Add the warning to an entity entry to insert into the database
@@ -85,22 +89,28 @@ namespace CharmieAPI.Controllers
         /// <param name="warning">Warning Object</param>
         /// <returns>Action Result</returns>
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutWarning(int id, Warning? warning)
         {
             // Verify if the warning receibed is not null or if the warning id are the same
-            if (warning is null || !id.Equals(warning.Id)) return BadRequest();
+            if (warning is null || !id.Equals(warning.Id) || warning.HourDay < DateTime.UtcNow) return BadRequest();
 
+            // Get warning
             Warning? temp = await _context.Warnings.FindAsync(id);
 
+            // Verify if exists
             if (temp is null) return BadRequest();
 
+            // Verify if the states are not equal to DENY or COMPLETED
             if (!warning.State.Equals(WarningStates.DENY) && !warning.State.Equals(WarningStates.COMPLETED))
             {
+                // DEpednding of the conditions get the state
                 if (temp.IdentityId is null || temp.IdentityId.Equals(warning.IdentityId)) warning.State = WarningStates.AWAITING;
                 else if (!temp.HourDay.Equals(warning.HourDay)) warning.State = WarningStates.PROPOSAL;
                 else warning.State = WarningStates.CONFIRMED;
             }
 
+            // Put the new info on the temp variable
             temp.Message = warning.Message;
             temp.HourDay = warning.HourDay;
             temp.IdentityId = warning.IdentityId;
@@ -131,6 +141,7 @@ namespace CharmieAPI.Controllers
         /// <param name="id">Warning's Id</param>
         /// <returns>Action Result</returns>
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteWarning(int id)
         {
             // Verify if the are any warnings in the database or if the warning is null

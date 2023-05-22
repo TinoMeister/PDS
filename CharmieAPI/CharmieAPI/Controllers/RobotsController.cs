@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Cors;
 using NuGet.Packaging;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CharmieAPI.Controllers
 {
@@ -25,12 +26,11 @@ namespace CharmieAPI.Controllers
         /// <param name="clientId">Client's Id</param>
         /// <returns>List of Robots</returns>
         [HttpGet("Client/{clientId}")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Robot>>> GetRobotsByClient(int clientId)
         {
             // Verify in the database if there are any Robots
             if (_context.Robots.IsNullOrEmpty()) return NotFound();
-
-            
 
             // Get all the environments
             List<Environment> environments = await _context.Environments.Where(e => e.ClientId.Equals(clientId)).ToListAsync();
@@ -60,6 +60,7 @@ namespace CharmieAPI.Controllers
         /// <param name="environmentId">Environment's Id</param>
         /// <returns>List of Robots</returns>
         [HttpGet("Environment/{environmentId}")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Robot>>> GetRobotsByEnvironment(int environmentId)
         {
             // Verify in the database if there are any Robots
@@ -82,6 +83,7 @@ namespace CharmieAPI.Controllers
         /// <param name="robot">Robot Object</param>
         /// <returns>Action Result</returns>
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Robot>> PostRobot(Robot? robot)
         {
             // Verify if the robot receibed is null
@@ -116,6 +118,7 @@ namespace CharmieAPI.Controllers
         /// <param name="robot">Robot Object</param>
         /// <returns>Action Result</returns>
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutRobot(int id, Robot? robot)
         {
             // Verify if the robot receibed is not null or if the robot id are the same
@@ -146,6 +149,7 @@ namespace CharmieAPI.Controllers
         /// <param name="id">Robot's Id</param>
         /// <returns>Action Result</returns>
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteRobot(int id)
         {
             // Verify if the are any robots in the database or if the robot is null
@@ -162,12 +166,14 @@ namespace CharmieAPI.Controllers
             List<TaskRobot> taskRobots = _context.TasksRobots.Where(tr => tr.RobotId.Equals(id)).ToList();
             _context.TasksRobots.RemoveRange(taskRobots);
 
-            // Put the robot as an entry an set the sate as remove from database
-            _context.Robots.Remove(robot);            
-
             // Try to save to database
             try
             {
+                await _context.SaveChangesAsync();
+
+                // Put the robot as an entry an set the sate as remove from database
+                _context.Robots.Remove(robot);
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)

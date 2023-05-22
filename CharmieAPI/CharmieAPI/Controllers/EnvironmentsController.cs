@@ -4,6 +4,7 @@ using CharmieAPI.Models;
 using Environment = CharmieAPI.Models.Environment;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CharmieAPI.Controllers
 {
@@ -23,6 +24,7 @@ namespace CharmieAPI.Controllers
         /// <param name="clientId">Client's Id</param>
         /// <returns>List of Environment</returns>
         [HttpGet("{clientId}")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Environment>>> GetEnvironments(int clientId)
         {
             // Verify in the database if there are any environments
@@ -45,6 +47,7 @@ namespace CharmieAPI.Controllers
         /// <param name="environment">Environment Object</param>
         /// <returns>Action Result</returns>
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Environment>> PostEnvironment(Environment? environment)
         {
             // Verify if the environment receibed is null
@@ -79,6 +82,7 @@ namespace CharmieAPI.Controllers
         /// <param name="environment">Environment Object</param>
         /// <returns>Action Result</returns>
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutEnvironment(int id, Environment? environment)
         {
             // Verify if the environment receibed is not null or if the environment id are the same
@@ -102,36 +106,45 @@ namespace CharmieAPI.Controllers
             return Ok();
         }
 
-        /* A DAR 50% */
+        /* A DAR 100% */
         /// <summary>
         /// This method removes an environment from the database
         /// </summary>
         /// /// <param name="id">Environment's Id</param>
         /// <returns>Action Result</returns>
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteEnvironment(int id)
         {
             // Verify if the are any environments in the database or if the environment is null
             if (_context.Environments.IsNullOrEmpty()) return BadRequest();
 
+            // Get the environment
             Environment? environment = await _context.Environments.FindAsync(id);
 
+            // Verify if is null
             if (environment is null) return BadRequest();
 
-            List<QuantityMaterial> materials = await _context.QuantityMaterials.Where(q => q.EnvironmentId.Equals(id)).ToListAsync();
+            // Get all the quantity material of that environment
+            List<QuantityMaterial> quantMaterials = await _context.QuantityMaterials.Where(q => q.EnvironmentId.Equals(id)).ToListAsync();
 
-            _context.QuantityMaterials.RemoveRange(materials);
+            // Delete all the quantity material
+            _context.QuantityMaterials.RemoveRange(quantMaterials);
 
+            // Get all the robots of that environment
             List<Robot> robots = await _context.Robots.Where(r => r.EnvironmentId.Equals(id)).ToListAsync();
 
+            // Delete all the robots
             _context.Robots.RemoveRange(robots);
-
-            // Put the environment as an entry an set the sate as remove from database
-            _context.Environments.Remove(environment);
 
             // Try to save to database
             try
             {
+                await _context.SaveChangesAsync();
+
+                // Put the environment as an entry an set the sate as remove from database
+                _context.Environments.Remove(environment);
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
