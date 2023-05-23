@@ -60,7 +60,7 @@ namespace CharmieAPI.Controllers
         /// <summary>
         /// This method creates a Materials
         /// </summary>
-        /// <param name="materials">List of Materials</param>
+        /// <param name="material">Material</param>
         /// <returns>List Materials</returns>
         [HttpPost]
         public async Task<ActionResult<IEnumerable<Material>>> PostMaterial(Material material)
@@ -68,6 +68,7 @@ namespace CharmieAPI.Controllers
             // Verify if the material receibed is null
             if (material is null) return BadRequest();
 
+            // Verify if the material already exists
             Material? temp = await _context.Materials.FirstOrDefaultAsync(m => m.Name.Equals(material.Name));
 
             if (temp is not null) return BadRequest();
@@ -105,6 +106,7 @@ namespace CharmieAPI.Controllers
             // Verify if the material receibed is not null or if the material id are the same
             if (material is null || id != material.Id) return BadRequest();
 
+            // Verify if exists
             Material? temp = await _context.Materials.FirstOrDefaultAsync(m => !m.Id.Equals(id) && m.Name.Equals(material.Name));
 
             if (temp is not null) return BadRequest();
@@ -139,16 +141,26 @@ namespace CharmieAPI.Controllers
             // Verify if the are any environments in the database or if the environment is null
             if (_context.Materials.IsNullOrEmpty()) return BadRequest();
 
+            // Get material
             Material? material = await _context.Materials.FindAsync(id);
 
             if (material is null) return BadRequest();
 
-            // Put the material as an entry an set the sate as remove from database
-            _context.Materials.Remove(material);
+            // Get all the quantity material of that material
+            List<QuantityMaterial> quantMaterials = await _context.QuantityMaterials.Where(qt => qt.MaterialId.Equals(id)).ToListAsync();
+
+            // Delete all the quantity material
+            _context.QuantityMaterials.RemoveRange(quantMaterials);
+
 
             // Try to save to database
             try
             {
+                await _context.SaveChangesAsync();
+
+                // Put the material as an entry an set the sate as remove from database
+                _context.Materials.Remove(material);
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)

@@ -93,7 +93,7 @@ builder.Services
             ValidAudience = builder.Configuration["Jwt:Audience"],
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
             )
         };
     });
@@ -132,6 +132,7 @@ app.UseAuthentication();
 // Remove-Migration
 
 // Get local Ip Address
+/*
 static string LocalIPAddress()
 {
     using Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, 0);
@@ -144,4 +145,4 @@ static string LocalIPAddress()
     {
         return "127.0.0.1";
     }
-}
+}*/

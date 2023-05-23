@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using CharmieAPI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Azure.Core;
 
 namespace CharmieAPI.Controllers
 {
@@ -32,20 +34,25 @@ namespace CharmieAPI.Controllers
         [HttpGet("{username}")]
         public async Task<ActionResult<User>> GetUser(string username)
         {
-            IdentityUser user = await _userManager.FindByNameAsync(username);
+            // Get the user Identify
+            IdentityUser? user = await _userManager.FindByNameAsync(username);
 
-            if (user == null) return NotFound();
+            // Verify if user is null
+            if (user is null) return NotFound();
 
+            // Get the temp user with clients and companies
             Identity? tempUser = _context.Identities.Include(i => i.Clients).Include(i => i.Companies)
                                             .FirstOrDefault(i => i.Id.Equals(user.Id));
 
+            // Verify if is null
             if (tempUser == null) return NotFound();
 
+            // Return the user with all the info necessary
             return new User
             { 
                 Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
+                UserName = user.UserName!,
+                Email = user.Email!,
                 Identity = tempUser
             };
         }
@@ -58,28 +65,30 @@ namespace CharmieAPI.Controllers
         [HttpPost("Client")]
         public async Task<ActionResult<User>> PostUserClient(User? user)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            // Verify states
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             // If the userName alredy exists return BadRequest
-            if (await _userManager.Users.AnyAsync(u => u.UserName.Equals(user.UserName))) return BadRequest();
+            if (await _userManager.Users.AnyAsync(u => u.UserName!.Equals(user!.UserName))) return BadRequest();
 
-            var result = await _userManager.CreateAsync(
-                new IdentityUser() { UserName = user.UserName, Email = user.Email },
+            // Create a new user with the username and email
+            IdentityResult result = await _userManager.CreateAsync(
+                new IdentityUser() {UserName = user!.UserName, Email = user!.Email },
                 user.Password
             );
 
-            if (!result.Succeeded)
-            {
-                return BadRequest(result.Errors);
-            }
+            // If something went wrong return BadRequest
+            if (!result.Succeeded) return BadRequest(result.Errors);
 
-            IdentityUser tempUser = await _userManager.FindByNameAsync(user.UserName);
+            // Get user with all the data necessary
+            IdentityUser? tempUser = await _userManager.FindByNameAsync(user.UserName);
 
+            if (tempUser is null) return NotFound();
+
+            // Update the user Id
             user.Id = tempUser.Id;
 
+            // Create a new User as Identity and save it
             user.Identity = new Identity
             {
                 Id = tempUser.Id,
@@ -88,6 +97,7 @@ namespace CharmieAPI.Controllers
 
             _context.Identities.Add(user.Identity);
 
+            // Create a new Client and save it
             Client client = new Client { IdentityId = tempUser.Id };
 
             _context.Clients.Add(client);
@@ -96,6 +106,7 @@ namespace CharmieAPI.Controllers
             {
                 await _context.SaveChangesAsync();
 
+                // Get the client info
                 await _context.Entry(client).ReloadAsync();
             }
             catch (Exception ex)
@@ -104,7 +115,8 @@ namespace CharmieAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            user.Password = null;
+            // return the user
+            user.Password = "";
             return Ok(user);
         }
 
@@ -116,28 +128,30 @@ namespace CharmieAPI.Controllers
         [HttpPost("Company")]
         public async Task<ActionResult<User>> PostUserCompany(User? user)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            // Verify states
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             // If the userName alredy exists return BadRequest
-            if (await _userManager.Users.AnyAsync(u => u.UserName.Equals(user.UserName))) return BadRequest();
+            if (await _userManager.Users.AnyAsync(u => u.UserName!.Equals(user!.UserName))) return BadRequest();
 
-            var result = await _userManager.CreateAsync(
-                new IdentityUser() { UserName = user.UserName, Email = user.Email },
-                user.Password
+            // Create a new user with the username and email
+            IdentityResult result = await _userManager.CreateAsync(
+                new IdentityUser() { UserName = user!.UserName, Email = user!.Email },
+                user!.Password
             );
 
-            if (!result.Succeeded)
-            {
-                return BadRequest(result.Errors);
-            }
+            // If something went wrong return BadRequest
+            if (!result.Succeeded) return BadRequest(result.Errors);
 
-            IdentityUser tempUser = await _userManager.FindByNameAsync(user.UserName);
+            // Get user with all the data necessary
+            IdentityUser? tempUser = await _userManager.FindByNameAsync(user.UserName);
 
+            if (tempUser is null) return BadRequest();
+
+            // Update the user Id
             user.Id = tempUser.Id;
 
+            // Create a new User as Identity and save it
             user.Identity = new Identity
             {
                 Id = tempUser.Id,
@@ -146,6 +160,7 @@ namespace CharmieAPI.Controllers
 
             _context.Identities.Add(user.Identity);
 
+            // Create a new Company and save it
             Company company = new Company { IdentityId = tempUser.Id };
 
             _context.Companies.Add(company);
@@ -154,6 +169,7 @@ namespace CharmieAPI.Controllers
             {
                 await _context.SaveChangesAsync();
 
+                // Get the company info
                 await _context.Entry(company).ReloadAsync();
             }
             catch (Exception ex)
@@ -162,54 +178,43 @@ namespace CharmieAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            user.Password = null;
+            // Return user
+            user.Password = "";
             return Ok(user);
         }
 
+        /// <summary>
+        /// This method creates an Token for the user
+        /// </summary>
+        /// <param name="request">Authentication Request</param>
+        /// <returns></returns>
         [HttpPost("BearerToken")]
         public async Task<ActionResult<AuthenticationResponse>> CreateBearerToken(AuthenticationRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Bad credentials");
-            }
+            // Verify states
+            if (!ModelState.IsValid) return BadRequest("Bad credentials");
 
+            // Get user by username
             var user = await _userManager.FindByNameAsync(request.UserName);
 
-            if (user == null)
-            {
-                return BadRequest("Bad credentials");
-            }
+            // Verify if is null
+            if (user == null) return BadRequest("Bad credentials");
 
+            // Verify password if correct
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
 
-            if (!isPasswordValid)
-            {
-                return BadRequest("Bad credentials");
-            }
+            // If not then return BadRequest
+            if (!isPasswordValid) return BadRequest("Bad credentials");
 
+            // Generate an Token
             var token = _jwtService.CreateToken(user);
 
+            // Return Token
             return Ok(token);
         }
 
+
         /*
-
-        [HttpGet("{userName}/{password}")]
-        public async Task<ActionResult<User>> GetUsers(string userName, string password)
-        {
-            // Verify in the database if there are any uses with the userName and password
-            User? user = await _context.Users.Include(u => u.Clients).Include(u => u.Companies)
-                                .FirstOrDefaultAsync(u => u.Username.Equals(userName) &&
-                                 u.Password.Equals(password));
-
-            // Verify if the user receibed is null
-            if (user is null) return NotFound();
-
-            // Return the user
-            return Ok(user);
-        }
-
         
         /// <summary>
         /// This method updates an User
