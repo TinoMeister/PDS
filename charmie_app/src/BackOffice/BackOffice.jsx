@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Navigate, Routes, Route } from 'react-router-dom';
 import { Navbar, Footer, Sidebar} from './components';
 import { Ecommerce, Environments, Robots, Tasks } from './pages';
 
@@ -6,9 +6,8 @@ import ImportCss from '../ImportCss';
 
 import { useStateContext } from './contexts/ContextProvider';
 
-const BackOffice = () => {
+const BackOfficePage = () => {
   const { currentMode, activeMenu } = useStateContext();
-
   ImportCss('Back');
 
   return (
@@ -48,6 +47,15 @@ const BackOffice = () => {
       </div>
     </div>
   );
+};
+
+
+const BackOffice = () => {
+  let loggedIn = true;
+  const userData = localStorage.getItem('user-info');
+  if (userData === null) loggedIn = false;
+
+  return (loggedIn ? <BackOfficePage /> : <Navigate to={'/'} />);
 };
 
 export default BackOffice;

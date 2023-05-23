@@ -1,18 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router-dom";
 import SCLOGO from "../assets/robo.jpg";
 
 import ImportCss from '../ImportCss';
+import { postData } from '../db/db';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [username, setUserName] = useState('');
+  const [password, setPassword] = useState('');
 
   ImportCss('Auth');
 
   const create = async (e) => {
     e.preventDefault();
-    navigate('/backOffice/');
+
+    let userData = {
+      'username': username,
+      'password': password,
+      'email': email,
+      'identity': {
+        'name': name
+      }
+    };
+
+    userData = await postData('Users/Client', userData);
+
+    if (!userData) 
+    {
+      alert("Erro creating!!!");
+      console.log(userData);
+      return;
+    }
+
+    let token = await postData('Users/BearerToken/', {'username': username, 'password': password});
+
+    if (!token) 
+    {
+      alert("Erro generating token!!!");
+      console.log(token);
+      return;
+    }
+
+    localStorage.setItem('user-token', token['token']);
+    localStorage.setItem('user-info', JSON.stringify(userData));
+
+    alert("Criado com sucesso");
+
+    navigate('/backOffice');
+    setName('');
+    setEmail('');
+    setUserName('');
+    setPassword('');
   }
 
   return (
@@ -38,9 +80,10 @@ const Signup = () => {
                   type="text"
                   className="input-control"
                   id="full-name"
-                  placeholder="Francisco Manuel da Silva Arantes"
                   autoComplete="off"
                   required
+                  onChange={(e) => setName(e.target.value)}
+                  value={name}
                 />
               </div>
               <div className="input-field">
@@ -51,9 +94,10 @@ const Signup = () => {
                   type="text"
                   className="input-control"
                   id="username"
-                  placeholder="Francisco Arantes"
                   autoComplete="off"
                   required
+                  onChange={(e) => setUserName(e.target.value)}
+                  value={username}
                 />
               </div>
               <div className="input-field">
@@ -64,9 +108,10 @@ const Signup = () => {
                   type="text"
                   className="input-control"
                   id="email"
-                  placeholder="example@gmail.com"
                   autoComplete="off"
                   required
+                  onChange={(e) => setEmail(e.target.value)}
+                  value={email}
                 />
               </div>
               <div className="input-field">
@@ -78,9 +123,10 @@ const Signup = () => {
                   name="password"
                   id="password"
                   className="input-control"
-                  placeholder="Password"
                   autoComplete="off"
                   required
+                  onChange={(e) => setPassword(e.target.value)}
+                  value={password}
                 />
               </div>
               <button onClick={create} type="submit" className="btn-submit">

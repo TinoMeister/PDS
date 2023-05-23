@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { AiOutlineRobot } from 'react-icons/ai';
 
@@ -8,21 +8,40 @@ import { Header } from '../components';
 const earningData = [
     {
       icon: <AiOutlineRobot />,
-      task: 'Cleaning Kitchen',
-      title: 'Robot 1',
-      state: 'No Problem',
+      amount: '39,354',
+      percentage: '-4%',
+      title: 'Customers',
+      iconColor: '#03C9D7',
+      iconBg: '#E5FAFB',
+      pcColor: 'red-600',
     },
     {
       icon: <AiOutlineRobot />,
-      task: 'Charging',
-      state: 'Low Battery',
-      title: 'Robot 2',
+      amount: '4,396',
+      percentage: '+23%',
+      title: 'Products',
+      iconColor: 'rgb(255, 244, 229)',
+      iconBg: 'rgb(254, 201, 15)',
+      pcColor: 'green-600',
     },
     {
       icon: <AiOutlineRobot />,
-      title: 'Robot 4',
-      task: 'Nothing',
-      state: 'No Problem',
+      amount: '423,39',
+      percentage: '+38%',
+      title: 'Sales',
+      iconColor: 'rgb(228, 106, 118)',
+      iconBg: 'rgb(255, 244, 229)',
+  
+      pcColor: 'green-600',
+    },
+    {
+      icon: <AiOutlineRobot />,
+      amount: '39,354',
+      percentage: '-12%',
+      title: 'Refunds',
+      iconColor: 'rgb(0, 194, 146)',
+      iconBg: 'rgb(235, 250, 242)',
+      pcColor: 'red-600',
     },
   ];
 
@@ -30,11 +49,18 @@ const DataInfo = () => {
     return (
       <>
         {earningData.map((item) => (
-          <div key={item.title} className="bg-white h-40 black bg-zinc-300 md:w-56 p-2 pt-5 rounded-2xl ">
-            <p className="text-lg black mt-0 p-0">{item.title}</p>
-
-            <p className="mt-3"> <span className="text-sm font-semibold">{item.task}</span> </p>
-            <p> <span className="text-sm font-semibold">{item.state}</span> </p>
+          <div key={item.title} className="bg-white h-44 dark:text-gray-200 dark:bg-secondary-dark-bg md:w-56  p-4 pt-9 rounded-2xl ">
+            <button
+              type="button"
+              style={{ color: item.iconColor, backgroundColor: item.iconBg }}
+              className="text-2xl opacity-0.9 rounded-full  p-4 hover:drop-shadow-xl"
+            >
+              { item.icon }
+            </button>
+            <p className="mt-3">
+              <span className="text-lg font-semibold">{item.amount}</span>
+            </p>
+            <p className="text-sm text-gray-400  mt-1">{item.title}</p>
           </div>
         ))}
       </>
@@ -42,22 +68,70 @@ const DataInfo = () => {
   };
 
 const Robots = () => {
+  const token = localStorage.getItem('user-token');
+  const userData = localStorage.getItem('user-info');
+  const user = JSON.parse(userData);
 
-    return (
-        <>
-        <div className="m-2 md:m-10 mt-2 p-2 md:p-10 bg-white rounded-3xl">
-        <button class="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-        Add Robot
-        </button>
-        </div>
-            <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-3xl">
+  useEffect(() => {
+    get();
+  });
 
-                <div className="flex m-3 flex-wrap justify-center gap-5 items-center">
-                <DataInfo />
-                </div>
-            </div>
-        </>
-    );
+  const get = async () => {
+    let robotData = await getData(`Robots/Client/${user['identity']['clients'][0]['id']}`, token);
+
+    if (!robotData) return;
+
+    console.log(robotData);
+  };
+
+  const post = async () => {
+      let robotData = {
+          'name': "",
+          "environmentId": 0
+      };
+
+      await postData('Robots', robotData, token);
+  }
+
+  const put = async () => {
+    let robotData = {
+        'id': 0,
+        'name': "",
+        'state': "OFF",
+        "environmentId": 0
+    };
+
+      await putData(`Robots/${id}`, taskData, token);
+  }
+
+  const del = async () => {
+      await deleteData(`Robots/${id}`, token);
+  }
+
+
+  return (
+      <>
+          <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-3xl">
+              <Header category="Page" title="Robots" />
+
+              <div className="flex m-3 flex-wrap justify-center gap-5 items-center">
+              <DataInfo />
+              </div>
+
+              <div className="flex m-3 flex-wrap justify-center gap-5 items-center">
+              <DataInfo />
+              </div>
+
+              <div className="flex m-3 flex-wrap justify-center gap-5 items-center">
+              <DataInfo />
+              </div>
+
+              <div className="flex m-3 flex-wrap justify-center gap-5 items-center">
+              <DataInfo />
+              </div>
+          </div>
+      </>
+  );
 }
 
 export default Robots;

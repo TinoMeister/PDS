@@ -1,18 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router-dom";
 import SCLOGO from "../assets/robo.jpg";
 
 import ImportCss from '../ImportCss';
+import { getData, postData } from '../db/db';
 
 const Signin = () => {
   const navigate = useNavigate();
+  const [username, setUserName] = useState('');
+  const [password, setPassword] = useState('');
   
   ImportCss('Auth');
 
   const login = async (e) => {
     e.preventDefault();
-    navigate('/backOffice/');
+
+    let userData = {
+      'username': username,
+      'password': password
+    };
+
+    let token = await postData('Users/BearerToken/', userData);
+
+    if (!token) 
+    {
+      alert("User / Password erradas!!!");
+      return;
+    }
+
+    let user = await getData(`Users/${username}`, token['token']);
+
+    if (!user) 
+    {
+      alert("Erro generating token!!!");
+      return;
+    }
+
+    localStorage.setItem('user-token', token['token']);
+    localStorage.setItem('user-info', JSON.stringify(user));
+
+    alert("Login com sucesso");
+
+    navigate('/backOffice');
+    setUserName('');
+    setPassword('');
   }
 
   return (
@@ -39,9 +71,10 @@ const Signin = () => {
                     type="text"
                     className="input-control"
                     id="username"
-                    placeholder="Tiago Oliveira"
                     autoComplete="off"
                     required
+                    onChange={(e) => setUserName(e.target.value)}
+                    value={username}
                   />
                 </div>
                 <div className="input-field">
@@ -53,9 +86,10 @@ const Signin = () => {
                     name="password"
                     id="password"
                     className="input-control"
-                    placeholder="Password"
                     autoComplete="off"
                     required
+                    onChange={(e) => setPassword(e.target.value)}
+                    value={password}
                   />
                 </div>
                 <button onClick={login} type="submit" className="btn-submit">
