@@ -101,9 +101,9 @@ builder.Services
 var app = builder.Build();
 
 //Setup local IP
-//string localIP = LocalIPAddress();
+string localIP = LocalIPAddress();
 
-//app.Urls.Add("http://" + localIP + ":7064");
+app.Urls.Add("http://" + localIP + ":7064");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -132,7 +132,7 @@ app.UseAuthentication();
 // Remove-Migration
 
 // Get local Ip Address
-/*
+
 static string LocalIPAddress()
 {
     using Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, 0);
@@ -145,4 +145,4 @@ static string LocalIPAddress()
     {
         return "127.0.0.1";
     }
-}*/
+}
