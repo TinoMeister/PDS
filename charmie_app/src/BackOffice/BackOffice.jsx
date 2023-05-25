@@ -1,7 +1,6 @@
 import { Navigate, Routes, Route } from 'react-router-dom';
 import { Navbar, Footer, Sidebar} from './components';
-import { Ecommerce, Environments, Robots, Tasks } from './pages';
-
+import { Ecommerce, Environments, Robots, Tasks, AddRobot, RobotInfo, EnvironmentInfo } from './pages';
 import ImportCss from '../ImportCss';
 
 import { useStateContext } from './contexts/ContextProvider';
@@ -40,6 +39,9 @@ const BackOfficePage = () => {
               <Route path="/robots" element={<Robots />} />
               <Route path="/environments" element={<Environments />} />
               <Route path="/tasks" element={<Tasks />} />
+              <Route path="/robot/addrobot" element={<AddRobot />} />
+              <Route path="/robot/robotinfo" element={<RobotInfo />} />
+              <Route path="/robot/environmentinfo" element={<EnvironmentInfo />} />
             </Routes>
           </div>
           <Footer />
