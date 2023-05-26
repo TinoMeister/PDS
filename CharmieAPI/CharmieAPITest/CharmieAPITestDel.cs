@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using CharmieAPI.Models;
+using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace CharmieAPITest;
 
@@ -13,6 +16,27 @@ public class CharmieAPITestDel
         WebApplicationFactory<Program> webAppFactory = new WebApplicationFactory<Program>();
 
         _httpClient = webAppFactory.CreateDefaultClient();
+    }
+
+    [TestMethod]
+    public async System.Threading.Tasks.Task TestGetUser()
+    {
+        var us = new User
+        {
+            UserName = "tino2",
+            Password = "abcd1234"
+        };
+
+        var response = await _httpClient.PostAsJsonAsync("api/Users/BearerToken", us);
+
+        var token = await response.Content.ReadFromJsonAsync<AuthenticationResponse>();
+
+        if (token is null) return;
+
+        _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token.Token);
+
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
     }
 
     [TestMethod]

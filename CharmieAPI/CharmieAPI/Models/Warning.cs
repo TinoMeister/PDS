@@ -17,5 +17,5 @@ public partial class Warning
 
     public int RobotId { get; set; }
 
-    public string IdentityId { get; set; }
+    public string? IdentityId { get; set; }
 }

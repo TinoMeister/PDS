@@ -13692,19 +13692,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\franc\\.nuget\\packages\\": {}
+    "C:\\Users\\tiago\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\2.2 ESI\\PDS\\PDS\\CharmieAPI\\CharmieAPITest\\CharmieAPITest.csproj",
+      "projectUniqueName": "C:\\Users\\tiago\\Desktop\\PDS\\PDS\\CharmieAPI\\CharmieAPITest\\CharmieAPITest.csproj",
       "projectName": "CharmieAPITest",
-      "projectPath": "D:\\2.2 ESI\\PDS\\PDS\\CharmieAPI\\CharmieAPITest\\CharmieAPITest.csproj",
-      "packagesPath": "C:\\Users\\franc\\.nuget\\packages\\",
-      "outputPath": "D:\\2.2 ESI\\PDS\\PDS\\CharmieAPI\\CharmieAPITest\\obj\\",
+      "projectPath": "C:\\Users\\tiago\\Desktop\\PDS\\PDS\\CharmieAPI\\CharmieAPITest\\CharmieAPITest.csproj",
+      "packagesPath": "C:\\Users\\tiago\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\tiago\\Desktop\\PDS\\PDS\\CharmieAPI\\CharmieAPITest\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\franc\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\tiago\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -13712,14 +13717,15 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "D:\\2.2 ESI\\PDS\\PDS\\CharmieAPI\\CharmieAPI\\CharmieAPI.csproj": {
-              "projectPath": "D:\\2.2 ESI\\PDS\\PDS\\CharmieAPI\\CharmieAPI\\CharmieAPI.csproj"
+            "C:\\Users\\tiago\\Desktop\\PDS\\PDS\\CharmieAPI\\CharmieAPI\\CharmieAPI.csproj": {
+              "projectPath": "C:\\Users\\tiago\\Desktop\\PDS\\PDS\\CharmieAPI\\CharmieAPI\\CharmieAPI.csproj"
             }
           }
         }
@@ -13781,7 +13787,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
       }
     }
   }
