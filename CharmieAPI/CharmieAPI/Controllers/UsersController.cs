@@ -18,12 +18,15 @@ namespace CharmieAPI.Controllers
         private readonly JwtService _jwtService;
         private readonly RobotDbContext _context;
 
+        //instanciar class 
         public UsersController(UserManager<IdentityUser> userManager, JwtService jwtService, RobotDbContext context)
         {
             _userManager = userManager;
             _jwtService = jwtService;
             _context = context;
         }
+
+        //geração de controladores para gestão de utilizadores
 
         /// <summary>
         /// This method search in the database for a User that has the same username and password
@@ -183,6 +186,8 @@ namespace CharmieAPI.Controllers
             return Ok(user);
         }
 
+        //método para criar e devolver tokens quando username e password correto
+
         /// <summary>
         /// This method creates an Token for the user
         /// </summary>
@@ -213,6 +218,7 @@ namespace CharmieAPI.Controllers
             return Ok(token);
         }
 
+        //aspnetcore.authentication.jwtbearer -> configurar serviço de autenticação no program
 
         /*
         

@@ -2,7 +2,7 @@
 import ImportCss from './ImportCss';
 import styles from './style';
 
-import {Navbar, Hero, Stats, Business, Billing, CardDeal, Testimonials, Clients, CTA, Footer} from './components';
+import {Navbar, Business, Footer} from './components';
 
 const Home = () => {
 
@@ -20,20 +20,13 @@ const Home = () => {
 
         <div className={`bg-primary ${styles.flexStart}`}>
           <div className= {`${styles.boxWidth}`}>
-            <Hero />
           </div>
         </div>
 
 
         <div className={`bg-primary ${styles.paddingX} ${styles.flexStart}`}>
           <div className= {`${styles.boxWidth}`}>
-            <Stats />
             <Business />
-            <Billing />
-            <CardDeal />
-            <Testimonials />
-            <Clients />
-            <CTA />
             <Footer />
           </div>
         </div>

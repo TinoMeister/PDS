@@ -1,0 +1,7 @@
+D:\2.2 ESI\PDS\PDS\CharmieAPI\CharmieAPITest\bin\Debug\net7.0\CoverletSourceRootsMapping_CharmieAPITest
+D:\2.2 ESI\PDS\PDS\CharmieAPI\CharmieAPITest\obj\Debug\net7.0\CharmieAPITest.csproj.AssemblyReference.cache
+D:\2.2 ESI\PDS\PDS\CharmieAPI\CharmieAPITest\obj\Debug\net7.0\MvcTestingAppManifest.json
+D:\2.2 ESI\PDS\PDS\CharmieAPI\CharmieAPITest\obj\Debug\net7.0\CharmieAPITest.GeneratedMSBuildEditorConfig.editorconfig
+D:\2.2 ESI\PDS\PDS\CharmieAPI\CharmieAPITest\obj\Debug\net7.0\CharmieAPITest.AssemblyInfoInputs.cache
+D:\2.2 ESI\PDS\PDS\CharmieAPI\CharmieAPITest\obj\Debug\net7.0\CharmieAPITest.AssemblyInfo.cs
+D:\2.2 ESI\PDS\PDS\CharmieAPI\CharmieAPITest\obj\Debug\net7.0\CharmieAPITest.csproj.CoreCompileInputs.cache
