@@ -35,6 +35,7 @@ namespace CharmieAPI.Controllers
         /// <param name="password">Password of the User</param>
         /// <returns>User</returns>
         [HttpGet("{username}")]
+        [Authorize]
         public async Task<ActionResult<User>> GetUser(string username)
         {
             // Get the user Identify

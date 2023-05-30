@@ -8,6 +8,7 @@ using Environment = CharmieAPI.Models.Environment;
 using System.Diagnostics;
 using NuGet.Packaging;
 using Microsoft.AspNetCore.Authorization;
+using NuGet.Protocol;
 
 namespace CharmieAPI.Controllers
 {
@@ -358,20 +359,43 @@ namespace CharmieAPI.Controllers
             List<TimeSpan> totalEnd = task.EndHour.Split(',').Where(t => TimeSpan.TryParse(t, out _))
                                                     .Select(t => TimeSpan.Parse(t)).ToList();
 
-            if (totalInit.Count < task.InitHour.Split(',').Count() || totalEnd.Count < task.EndHour.Split(',').Count()) 
+            if (totalInit.Count < task.InitHour.Split(',').Count() || totalEnd.Count < task.EndHour.Split(',').Count())
                 return BadRequest();
 
             // Verify if all end dates are higher then the init dates
-            if (!totalEnd.Zip(totalInit, (end, init) => end >= init).All(c => c)) return BadRequest();
+            if (!totalEnd.Zip(totalInit, (end, init) => end > init).All(c => c)) return BadRequest();
+
+           // Debug.WriteLine(task.TasksRobots.ToJson());
 
             // Verify tasks
             List<Task> newTasks = await VerifyTask(task);
+
+            Debug.WriteLine(task.TasksRobots.ToJson());
 
             // If count is 1 then it passes and can save otherwise return NotFound
             if (!newTasks.Count.Equals(1) || !newTasks.First().InitHour.Equals(task.InitHour)) return NotFound(newTasks);
 
             // Get the first
-            Task newTask = newTasks.First();
+            Task newTask = new Task
+            {
+                Id = task.Id,
+                Name = task.Name,
+                InitHour = task.InitHour,
+                EndHour = task.EndHour,
+                WeekDays = task.WeekDays,
+                Repeat = task.Repeat,
+                Execution = task.Execution,
+                Stop = task.Stop,
+                TasksRobots = new List<TaskRobot>()
+            };
+
+            foreach (TaskRobot tr in task.TasksRobots)
+            {
+                newTask.TasksRobots.Add(new TaskRobot
+                {
+                    RobotId = tr.RobotId
+                });
+            }
 
             // Save into database
             await _context.Tasks.AddAsync(newTask);
@@ -428,18 +452,31 @@ namespace CharmieAPI.Controllers
             if (!updateTasks.Count.Equals(1)) return NotFound(updateTasks);
 
             // Get first
-            Task updateTask = updateTasks.First();
-
-            // Remove all existing TaskRobots for this task
-            List<TaskRobot> existingTaskRobots = await _context.TasksRobots.Where(tr => tr.TaskId == task.Id).ToListAsync();
-            _context.TasksRobots.RemoveRange(existingTaskRobots);
-
-            // Add the new TaskRobots to the task
-            foreach (TaskRobot taskRobot in updateTask.TasksRobots)
+            Task updateTask = new Task
             {
-                taskRobot.TaskId = task.Id;
-                _context.TasksRobots.Add(taskRobot);
+                Id = task.Id,
+                Name = task.Name,
+                InitHour = task.InitHour,
+                EndHour = task.EndHour,
+                WeekDays = task.WeekDays,
+                Repeat = task.Repeat,
+                Execution = task.Execution,
+                Stop = task.Stop,
+                TasksRobots = new List<TaskRobot>()
+            };
+
+            foreach (TaskRobot tr in task.TasksRobots)
+            {
+                updateTask.TasksRobots.Add(new TaskRobot
+                {
+                    RobotId = tr.RobotId,
+                    TaskId = task.Id
+                });
             }
+           
+            // Remove all existing TaskRobots for this task
+            List <TaskRobot> existingTaskRobots = await _context.TasksRobots.Where(tr => tr.TaskId == id).ToListAsync();
+            _context.TasksRobots.RemoveRange(existingTaskRobots);
 
             // Put the environment as an entry an set the sate as modified to update the database
             _context.Entry(updateTask).State = EntityState.Modified;
@@ -447,6 +484,10 @@ namespace CharmieAPI.Controllers
             // Try to save to database
             try
             {
+                await _context.SaveChangesAsync();
+
+                await _context.TasksRobots.AddRangeAsync(updateTask.TasksRobots);
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)

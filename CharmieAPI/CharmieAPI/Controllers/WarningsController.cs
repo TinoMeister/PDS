@@ -55,7 +55,7 @@ namespace CharmieAPI.Controllers
         public async Task<ActionResult<Warning>> PostWarning(Warning? warning)
         {
             // Verify if the warning receibed is null
-            if (warning is null || warning.IdentityId is not null) return BadRequest();
+            if (warning is null) return BadRequest();
 
             // Set state of warning to CREATED
             warning.State = WarningStates.CREATED;

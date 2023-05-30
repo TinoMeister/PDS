@@ -3,6 +3,8 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Environment = CharmieAPI.Models.Environment;
 using System.Net.Http.Json;
+using System.Net.Http.Headers;
+using NuGet.Common;
 
 namespace CharmieAPITest;
 
@@ -16,6 +18,25 @@ public class CharmieAPITestPost
         WebApplicationFactory<Program> webAppFactory = new WebApplicationFactory<Program>();
 
         _httpClient = webAppFactory.CreateDefaultClient();
+
+        _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJKV1QgZm9yIENoYXJtaWVBUEkucHQiLCJqdGkiOiIwZGY5NjAzNi05MzkzLTRmYmYtYmQ0Ny04MDVkMTJmZjA1ZjQiLCJpYXQiOiI1LzI2LzIwMjMgMTI6NDQ6MTEgUE0iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjU4NDRlNDgzLTI3ZjMtNDhkYS1hMDAzLTk5ZTQ4NmYxMTY5OSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJ0aW5vMiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InRpbm8yQGdtYWlsLmNvbSIsImV4cCI6MTY4NTExMjI1MSwiaXNzIjoiQ2hhcm1pZUFQSS5wdCIsImF1ZCI6IkNoYXJtaWVBUEkucHQifQ.J38uQlelL9qzzZyAY2Lp89B878uhJvXHnHvPGt0ssSI");
+    }
+
+    [TestMethod]
+    public async System.Threading.Tasks.Task TestGetUser()
+    {
+        var us = new User
+        {
+            UserName = "tino2",
+            Password = "abcd1234"
+        };
+
+        var response = await _httpClient.PostAsJsonAsync("api/Users/BearerToken", us);
+
+        var token = await response.Content.ReadFromJsonAsync<AuthenticationResponse>();
+
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
     }
 
     [TestMethod]
@@ -28,6 +49,7 @@ public class CharmieAPITestPost
             Width = 20,
             ClientId = 1
         };
+
         var response = await _httpClient.PostAsJsonAsync("api/Environments", en);
 
         await response.Content.ReadFromJsonAsync<Environment>();
@@ -41,7 +63,7 @@ public class CharmieAPITestPost
         var r = new Robot
         {
             Name = "robot",
-            EnvironmentId = 1
+            EnvironmentId = 2
         };
 
         var response = await _httpClient.PostAsJsonAsync("api/Robots", r);
@@ -64,11 +86,11 @@ public class CharmieAPITestPost
             {
                 new TaskRobot
                 {
-                    RobotId = 1,
+                    RobotId = 2,
                     Robot = new Robot
                     {
-                        Id = 1,
-                        Name = "string",
+                        Id = 2,
+                        Name = "robot",
                     }
                 }
             }
@@ -88,8 +110,9 @@ public class CharmieAPITestPost
         {
             Message = "string",
             HourDay = DateTime.Now,
-            RobotId = 1
+            RobotId = 2
         };
+
         var response = await _httpClient.PostAsJsonAsync("api/Warnings", w);
 
         await response.Content.ReadFromJsonAsync<Warning>();
@@ -102,7 +125,7 @@ public class CharmieAPITestPost
     {
         var m = new Material
         {
-            Name = "teste",
+            Name = "teste2",
         };
 
         var response = await _httpClient.PostAsJsonAsync("api/Materials", m);
@@ -119,9 +142,9 @@ public class CharmieAPITestPost
         {
             new QuantityMaterial {
                 Quantity = 0,
-                EnvironmentId = 1,
+                EnvironmentId = 2,
                 Material = new Material {
-                    Name = "string"
+                    Name = "test2"
                 }
             }
         };
@@ -140,9 +163,9 @@ public class CharmieAPITestPost
         {
             new QuantityMaterial {
                 Quantity = 0,
-                TaskId = 1,
+                TaskId = 13,
                 Material = new Material {
-                    Name = "string"
+                    Name = "test2"
                 }
             }
         };
