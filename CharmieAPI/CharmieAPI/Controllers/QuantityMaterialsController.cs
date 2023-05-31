@@ -84,6 +84,9 @@ namespace CharmieAPI.Controllers
                 // Verify if material name exists
                 Material? tempMat = await _context.Materials.FirstOrDefaultAsync(m => m.Name.Equals(quantityMaterial.Material.Name));
 
+                // Verify if the materiasl exists and the task id is not null
+                if (tempMat is null && quantityMaterial.TaskId is not null) return BadRequest("Material does not exists");
+
                 // If not then save it
                 if (tempMat is null)
                 {
@@ -102,8 +105,30 @@ namespace CharmieAPI.Controllers
                         return BadRequest(ModelState);
                     }
                 }
-                // else get the id
-                else quantityMaterial.Material.Id = tempMat.Id;
+                else 
+                { 
+                    // Get the id
+                    quantityMaterial.Material.Id = tempMat.Id;
+
+                    // Get the quatity material that exists in the DB for the material and environment
+                    QuantityMaterial? qtTemp = await _context.QuantityMaterials.FirstOrDefaultAsync(qt => qt.MaterialId.Equals(tempMat.Id) &&
+                                                                                                     qt.EnvironmentId.Equals(quantityMaterial.EnvironmentId) &&
+                                                                                                     qt.TaskId.Equals(null));
+
+                    if (quantityMaterial.TaskId is not null)
+                    {
+                        // verify if is null
+                        if (qtTemp is null) return BadRequest("Material doe not exists in the environment");
+
+                        // Verify the quatity if is lower then the existence quantity in the environment
+                        if (qtTemp.Quantity < quantityMaterial.Quantity) return BadRequest("Quantity is higher then the quantity exists in the environment");
+                    }
+                    else
+                    {
+                        // verify if is not null
+                        if (qtTemp is not null) return BadRequest("Material already exists in the environment");
+                    }
+                }
 
                 // update material id
                 quantityMaterial.MaterialId = quantityMaterial.Material.Id;
@@ -156,7 +181,7 @@ namespace CharmieAPI.Controllers
             foreach (QuantityMaterial quant in quantityMaterials)
             {
                 QuantityMaterial? temp = _context.QuantityMaterials.Include(q => q.Material)
-                                            .FirstOrDefault(q => (q.EnvironmentId.Equals(tempQuant.EnvironmentId) ||
+                                            .FirstOrDefault(q => (q.EnvironmentId.Equals(tempQuant.EnvironmentId) &&
                                                 q.TaskId.Equals(tempQuant.TaskId)) &&
                                                 q.Material.Name.Equals(quant.Material.Name)
                                             );
@@ -174,11 +199,34 @@ namespace CharmieAPI.Controllers
                 quant.Material = temp.Material;
             }
 
+            var resp;
             // Save into database
-            if (!quantsAdd.IsNullOrEmpty()) await PostQuantityMaterial(quantsAdd);
+            if (!quantsAdd.IsNullOrEmpty())
+            {
+                resp = await PostQuantityMaterial(quantsAdd);
+
+                // If there is an error, return the error
+                if (resp.Result is BadRequestObjectResult)
+                {
+                    var badRequestResult = resp.Result as BadRequestObjectResult;
+                    var errorDetails = badRequestResult.Value;
+
+                    return BadRequest(errorDetails);
+                }
+            }
 
             // Delete Old Quantity Materias
-            await DeleteOldQuantityMaterial(tempQuant.EnvironmentId, tempQuant.TaskId, quantityMaterials);
+            resp = await DeleteOldQuantityMaterial(tempQuant.EnvironmentId, tempQuant.TaskId, quantityMaterials);
+
+            // If there is an error, return the error
+            if (resp is BadRequestObjectResult)
+            {
+                var badRequestResult = resp as BadRequestObjectResult;
+                var errorDetails = badRequestResult.Value;
+
+                return BadRequest(errorDetails);
+            }
+
 
             // Get Quantity and verify wich one is to update
             foreach (QuantityMaterial quant in quantityMaterials)
@@ -188,9 +236,32 @@ namespace CharmieAPI.Controllers
 
                 if (temp is null) continue;
 
+                if (quant.TaskId is not null)
+                {
+                    // Get the quatity material that exists in the DB for the material and environment
+                    QuantityMaterial? qtTemp = await _context.QuantityMaterials.FirstOrDefaultAsync(qt => qt.MaterialId.Equals(quant.MaterialId) &&
+                                                                                                 qt.EnvironmentId.Equals(quant.EnvironmentId) &&
+                                                                                                 qt.TaskId.Equals(null));
+
+                    // verify if is null
+                    if (qtTemp is null) return BadRequest("Material doe not exists in the environment");
+
+                    // Verify the quatity if is lower then the existence quantity in the environment
+                    if (qtTemp.Quantity < quant.Quantity) return BadRequest("Quantity is higher then the quantity exists in the environment");
+                }
+                else
+                {
+                    // Get all the quantity materials with the environment
+                    List<QuantityMaterial> qtTemps = await _context.QuantityMaterials.Where(qt => qt.MaterialId.Equals(quant.MaterialId) &&
+                                                                                                 qt.EnvironmentId.Equals(quant.EnvironmentId)).ToListAsync();
+
+                    // Verify the quantity in a task
+                    if (qtTemps.Any(qt => qt.Quantity > quant.Quantity)) return BadRequest("Quantity is lower then the quantity exists in a certain task");
+                }
+
                 // Update the Quantity
                 if (!quant.Quantity.Equals(temp.Quantity))
-                {
+                {               
                     temp.Quantity = quant.Quantity;
 
                     _context.Entry(temp).State = EntityState.Modified;
@@ -220,20 +291,13 @@ namespace CharmieAPI.Controllers
         /// <param name="taskId">Task's Id</param>
         /// <param name="quants">List Quantities</param>
         /// <returns>Action Result</returns>
-        private async Task<IActionResult> DeleteOldQuantityMaterial(int? envId, int? taskId, List<QuantityMaterial> quants)
+        private async Task<IActionResult> DeleteOldQuantityMaterial(int envId, int? taskId, List<QuantityMaterial> quants)
         {
             List<QuantityMaterial> quantsRemove = new List<QuantityMaterial>();
 
             // Goes element by element and add to the list quantsRemove all the elements that doesnt have the same id in Environment
-            foreach (QuantityMaterial quant in await _context.QuantityMaterials.Where(q => q.EnvironmentId.Equals(envId)).ToListAsync())
-            {
-                if (quants.Any(q => q.Id.Equals(quant.Id))) continue;
-
-                quantsRemove.Add(quant);
-            }
-
-            // Goes element by element and add to the list quantsRemove all the elements that doesnt have the same id in Task
-            foreach (QuantityMaterial quant in await _context.QuantityMaterials.Where(q => q.TaskId.Equals(taskId)).ToListAsync())
+            foreach (QuantityMaterial quant in await _context.QuantityMaterials.Where(q => q.EnvironmentId.Equals(envId) &&
+                                                                                           q.TaskId.Equals(taskId)).ToListAsync())
             {
                 if (quants.Any(q => q.Id.Equals(quant.Id))) continue;
 

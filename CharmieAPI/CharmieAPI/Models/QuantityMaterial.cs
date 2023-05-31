@@ -11,7 +11,7 @@ public partial class QuantityMaterial
 
     public int MaterialId { get; set; }
 
-    public int? EnvironmentId { get; set; }
+    public int EnvironmentId { get; set; }
 
     public int? TaskId { get; set; }
 
