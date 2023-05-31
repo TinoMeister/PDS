@@ -3,7 +3,8 @@
 namespace CharmieAPI.Models;
 
 public class User
-{
+{ 
+    //Representa os dados dos utilizadors
     public string Id { get; set; }
 
     [Required]

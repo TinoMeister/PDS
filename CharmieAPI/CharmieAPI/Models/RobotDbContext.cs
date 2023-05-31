@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace CharmieAPI.Models;
-
+//Instalação dos pacotes Nuget, aspnet core identity e incluir classes com herança depois add migration e atualizar a bdd
 public partial class RobotDbContext : IdentityUserContext<IdentityUser>
 {
     public RobotDbContext()

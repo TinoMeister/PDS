@@ -69,6 +69,7 @@ builder.Services.AddDbContext<RobotDbContext>(op =>
 
 builder.Services.AddScoped<JwtService>();
 
+//Configuração do serviço identity
 builder.Services.AddIdentityCore<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -80,6 +81,7 @@ builder.Services.AddIdentityCore<IdentityUser>(options =>
     options.Password.RequireLowercase = false;
 }).AddEntityFrameworkStores<RobotDbContext>();
 
+//configurar o servico de autenticação
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -120,6 +122,7 @@ app.MapControllers();
 
 app.Run();
 
+//definimos que api usa autenticação
 app.UseAuthentication();
 
 // Scaffold-DbContext "Server=DESKTOP-53GB1QO;Database=robotDb;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models

@@ -7,6 +7,7 @@ using System.Text;
 
 namespace CharmieAPI.Services
 {
+    //Gerar token de seguranca para user
     public class JwtService
     {
         private const int EXPIRATION_MINUTES = 120;

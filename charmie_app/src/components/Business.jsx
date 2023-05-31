@@ -1,6 +1,5 @@
 import {features} from '../constants';
 import styles, {layout} from '../style';
-import Button from './Button';
 
 const FeatureCard = ({icon, title, content, index}) => (
   <div className={`flex flex-row p-6 rounded-[20px] ${index !== features.lenght -1 ? "mb-6" : "mb-0"} feature-card`}>
@@ -22,10 +21,9 @@ const Business = () => {
   return (
     <section id="features" className={layout.section}>
       <div className={layout.sectionInfo}>
-      <h2 className={styles.heading2}>You do the business, <br className="sm:block hidden" />we'll handle the money.</h2>
-      <p className={`${styles.paragraph} max-w-[470px] mt-5`}>With the right credit card, you can improve your financial life by building credit, earning rewards and saving money. But with hundreds of credit cardsd on the market.</p>
-      
-      <Button styles="mt-10"/>
+      <h2 className={styles.heading2}>CHARMIE</h2>
+      <p className={`${styles.paragraph} max-w-[470px] mt-5`}>CHARMIE is a domestic healthcare service and assistive robot capable of performing tasks in non-standardized environments. The social goal for CHARMIE is to develop a robot capable of aiding in family homes. Nursing homes, and healthcare facilities.</p>
+    
       </div>
 
       <div className={`${layout.sectionImg} flex-col`}>
