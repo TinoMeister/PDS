@@ -1,5 +1,5 @@
-//const url = "http://172.16.10.13:7064/api/"; // school
-const url = "http://192.168.1.64:7064/api/"; // resi
+const url = "http://172.16.15.164:7064/api/"; // school
+//const url = "http://192.168.1.64:7064/api/"; // resi
 //const url = "http://192.168.1.70:7064/api/"; // home
 
 export async function getData(camp = '', token = '') {
