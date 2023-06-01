@@ -199,16 +199,15 @@ namespace CharmieAPI.Controllers
                 quant.Material = temp.Material;
             }
 
-            var resp;
             // Save into database
             if (!quantsAdd.IsNullOrEmpty())
             {
-                resp = await PostQuantityMaterial(quantsAdd);
+                var respPost = await PostQuantityMaterial(quantsAdd);
 
                 // If there is an error, return the error
-                if (resp.Result is BadRequestObjectResult)
+                if (respPost.Result is BadRequestObjectResult)
                 {
-                    var badRequestResult = resp.Result as BadRequestObjectResult;
+                    var badRequestResult = respPost.Result as BadRequestObjectResult;
                     var errorDetails = badRequestResult.Value;
 
                     return BadRequest(errorDetails);
@@ -216,12 +215,12 @@ namespace CharmieAPI.Controllers
             }
 
             // Delete Old Quantity Materias
-            resp = await DeleteOldQuantityMaterial(tempQuant.EnvironmentId, tempQuant.TaskId, quantityMaterials);
+            var respDel = await DeleteOldQuantityMaterial(tempQuant.EnvironmentId, tempQuant.TaskId, quantityMaterials);
 
             // If there is an error, return the error
-            if (resp is BadRequestObjectResult)
+            if (respDel is BadRequestObjectResult)
             {
-                var badRequestResult = resp as BadRequestObjectResult;
+                var badRequestResult = respDel as BadRequestObjectResult;
                 var errorDetails = badRequestResult.Value;
 
                 return BadRequest(errorDetails);

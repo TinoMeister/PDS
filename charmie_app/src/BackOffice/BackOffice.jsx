@@ -1,13 +1,11 @@
 import { Navigate, Routes, Route } from 'react-router-dom';
 import { Navbar, Footer, Sidebar} from './components';
 import { Ecommerce, Environments, Robots, Tasks, AddRobot, RobotInfo, EnvironmentInfo } from './pages';
-import ImportCss from '../ImportCss';
 
 import { useStateContext } from './contexts/ContextProvider';
 
 const BackOfficePage = () => {
   const { currentMode, activeMenu } = useStateContext();
-  ImportCss('Back');
 
   return (
     <div className={ currentMode }>

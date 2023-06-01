@@ -21,7 +21,7 @@ const Navbar = () => {
         className={`font-poppings font-normal cursor-pointer text[16px] mr-0 text-white`} 
         >
           <a onClick={login}>
-          <button class="bg-black hover:bg-blue-700 text-white font-bold py-2 px-20 rounded-full">
+          <button className="bg-black hover:bg-blue-700 text-white font-bold py-2 px-20 rounded-full">
   Login
 </button>
           </a>

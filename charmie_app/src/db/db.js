@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-const url = "http://172.16.15.164:7064/api/"; // school
-//const url = "http://192.168.1.64:7064/api/"; // resi
-=======
 //const url = "http://172.16.10.13:7064/api/"; // school
-// const url = "http://192.168.1.64:7064"; // resi
->>>>>>> c6ee00f4657e3c834296a875dbb10934aac7afbb
-//const url = "http://192.168.1.70:7064/api/"; // home
-const url = "http://172.16.12.26:7064/api/"; //school francisco
+const url = "http://192.168.10.117:7064/api/";
+//const url = "http://172.16.12.26:7064/api/"; //school francisco
 
 export async function getData(camp = '', token = '') {
     try {

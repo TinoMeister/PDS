@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { AiOutlineRobot } from 'react-icons/ai';
 import { Header } from '../components';
 import { Link } from "react-router-dom";
+import ImportCss from '../../ImportCss';
 
 const EnvironmentInfo = () => {
+    ImportCss('Back');
  return (
      <>
         <div className="m-2 md:m-10 p-10 bg-white rounded-3xl">

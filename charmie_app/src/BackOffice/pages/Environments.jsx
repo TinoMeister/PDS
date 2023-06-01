@@ -4,6 +4,7 @@ import { AiOutlineRobot } from 'react-icons/ai';
 import { Link } from "react-router-dom";
 import Select from 'react-select';
 import { getData, postData, putData, deleteData } from '../../db/db';
+import ImportCss from '../../ImportCss';
 
 
 const earningData = [
@@ -35,6 +36,7 @@ const DataInfo = () => {
 };
 
 const Environments = () => {
+    ImportCss('Back');
     const toolbarOptions = ['Search'];
     const editing = { allowDeleting: true, allowEditing: true };
 

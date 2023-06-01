@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 
+import ImportCss from '../../ImportCss';
 import { getData, postData, putData, deleteData } from '../..//db/db';
 
 const Tasks = () => {
+    ImportCss('Back');
     const token = localStorage.getItem('user-token');
     const userData = localStorage.getItem('user-info');
     const user = JSON.parse(userData);

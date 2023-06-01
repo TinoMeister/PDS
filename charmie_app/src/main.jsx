@@ -12,9 +12,7 @@ registerLicense('Mgo+DSMBaFt+QHJqVk1mQ1BMaV1CX2BZdllzRGlYf04BCV5EYF5SRHNeS11rTHt
 const root = createRoot(document.getElementById('root'));
 
 root.render(
-  <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </StrictMode>
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
 );

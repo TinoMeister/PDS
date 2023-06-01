@@ -6,6 +6,7 @@ import { IoIosMore } from 'react-icons/io';
 import { Button } from '../components';
 import { useStateContext } from '../contexts/ContextProvider';
 import product9 from '../data/product9.jpg';
+import ImportCss from '../../ImportCss';
 
 
 const earningData = [
@@ -73,6 +74,7 @@ const DataInfo = () => {
 
 
 const Ecommerce = () => {
+  ImportCss('Back');
   const { currentColor, currentMode } = useStateContext();
 
   return (

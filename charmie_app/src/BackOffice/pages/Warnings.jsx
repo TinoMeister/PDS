@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
+import ImportCss from '../../ImportCss';
 
 const Warnings = () => {
+    ImportCss('Back');
     const token = localStorage.getItem('user-token');
     const userData = localStorage.getItem('user-info');
     const user = JSON.parse(userData);

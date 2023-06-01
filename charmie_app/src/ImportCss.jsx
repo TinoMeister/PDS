@@ -35,7 +35,7 @@ const ImportCss = (location) => {
         removeLink('../src/Auth/css/bootstrap-grid.min.css');
         removeLink('../src/Auth/icons/boxicons-2/css/boxicons.min.css');
       
-        createLink('../src/BackOffice/App.css');
+        createLink('../../src/BackOffice/App.css');
     }
   }, []);
 };
